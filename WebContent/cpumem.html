@@ -1,0 +1,322 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<script type="text/javascript">
+	window.onload = function() {
+
+		// dataPoints
+		var dataPoints1 = [];
+		var dataPoints2 = [];
+		var dataPoints3 = [];
+		var dataPoints4 = [];
+
+		var chart = new CanvasJS.Chart("cpuSysLoadAvgChartContainer", {
+			animationEnabled: true,
+			zoomEnabled : true,
+			title : {
+				text : "System Load Average"
+			},
+			toolTip : {
+				enabled : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "System load average for the last minute"
+			},
+			axisY : {
+				suffix : ' ',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "System Load Average",
+				dataPoints : dataPoints1
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+
+
+		var chart2 = new CanvasJS.Chart("cpuLoadChartContainer", {
+			animationEnabled: true,
+			zoomEnabled : true,
+			title : {
+				text : "System CPU Load"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : " \"Recent cpu usage\" for the whole system"
+			},
+			axisY : {
+				suffix : ' ',
+				includeZero : true
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "System CPU Load",
+				dataPoints : dataPoints2
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+		
+		var chart3 = new CanvasJS.Chart("memoryChartContainer", {
+			animationEnabled: true,
+			zoomEnabled : true,
+			title : {
+				text : "System Memory"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Memory Usage"
+			},
+			axisY : {
+				suffix : ' gb',
+				includeZero : true
+			},
+			data : [ {
+				// dataSeries1
+				type : "area",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Total Memory",
+				dataPoints : dataPoints3
+			},
+			{
+				// dataSeries1
+				type : "area",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Available Memory",
+				dataPoints : dataPoints4
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+
+
+
+		var updateInterval = 3000;
+		// initial value
+		var yValue1 = 0;
+		//var yValue2 = -1;
+		var yValue3 = 0;
+		var yValue4 = 0;
+		
+
+		var time = new Date;
+		/* time.setHours(9);
+		time.setMinutes(30);
+		time.setSeconds(00);
+		time.setMilliseconds(00); */
+		// starting at 9.30 am
+		var updateChart = function(count) {
+			count = count || 1;
+
+			// count is number of times loop runs to generate random dataPoints. 
+			var xhr = new XMLHttpRequest();
+			//xhr.open("GET", "http://localhost:8080/appdiagnostics-web/GetThreadDetailsServlet", false);
+			xhr.open("GET", "GetCPUMemoryDetailsServlet", false);
+			xhr.send();
+			console.log('responseText:' + xhr.responseText);
+			var data = JSON.parse(xhr.responseText);
+
+			for (var i = 0; i < count; i++) {
+
+				// add interval duration to time				
+				time.setTime(time.getTime() + updateInterval);
+
+				yValue1 = data.sysLoadAvg
+				yValue2 = data.sysCpuLoad;
+				yValue3 = data.totMem;
+				yValue4 = data.availMem;
+				
+				// pushing the new values
+				dataPoints1.push({
+					x : time.getTime(),
+					y : yValue1
+				});
+				dataPoints2.push({
+					x : time.getTime(),
+					y : yValue2 * 1
+				});
+				dataPoints3.push({
+					x : time.getTime(),
+					y : yValue3
+				});
+				dataPoints4.push({
+					x : time.getTime(),
+					y : yValue4
+				});
+				
+				
+			};
+
+			// updating legend text with  updated with y Value 
+			chart.options.data[0].legendText = " System Load Avg " + yValue1;
+			chart2.options.data[0].legendText = " System CPU Load " + yValue2;
+			
+			chart3.options.data[0].legendText = " Total Memory " + yValue3;
+			chart3.options.data[1].legendText = " Available Memory " + yValue4;
+			//chart.options.data[1].legendText = " Used " + yValue2;
+			
+			
+        
+			chart.render();
+			chart2.render();
+			chart3.render();
+		};
+
+		// generates first set of dataPoints 
+		updateChart(1);
+
+		// update chart after specified interval 
+		setInterval(function() {
+			updateChart()
+		}, updateInterval);
+	}
+	
+</script>
+<script type="text/javascript" src="js/canvasjs.min.js"></script>
+</head>
+<style type="text/css">
+   body { background: black !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+   .table-bordered td {
+     border: 0px solid #7C2513 !important;
+     background-color: black !important;
+ }
+
+</style>
+<body>
+
+<header>
+   <nav>
+         <input type="checkbox" id="css-toggle-menu" name="css-toggle-menu"> 
+        <ul class="main">
+				<!-- <li><a href="index.html"><img class="bottom" src="img/serverdekho.png"></a></li>  -->
+				<li><a href="index.html">Home</a></li>
+				<li><a href="memory.html">Memory</a></li>
+				<li><a href="threads.html">Threads/Classes</a></li>
+				<li><a href="cpumem.html">System</a></li>
+				<li><a href="GetLoggerServlet">Log Level</a></li>
+			</ul>
+         <label for="css-toggle-menu" id="css-toggle-menu"></label> 
+   </nav>
+</header>
+
+<br>
+<div class="container">
+<div class="panel panel-default">
+	<div class="table-responsive">
+		
+		<table class="table table-bordered table-condensed">
+		<tbody>
+		
+			<tr>
+				  <td><div id="cpuSysLoadAvgChartContainer" style="height: 300px; width: 100%;"></div></td>
+				 <td><div id="cpuLoadChartContainer" style="height: 300px; width: 100%;"></div></td>
+			</tr>
+		
+		</tbody>
+		</table>
+		
+		<Left>
+			<h6>
+				<ul>
+					<li><b>System Cpu Load **:</b>.<i> It is  "Recent CPU usage" for the whole system. This value is a double in the [0.0,1.0] interval. 
+					A value of 0.0 means that all CPUs were idle during the recent period of time observed, while a value of 1.0 means that all CPUs were actively running 100% of the time during the recent period being
+	 observed. All values between 0.0 and 1.0 are possible depending of the activities going on in the system. </i></li> 
+	 
+	 <li><b>System Load Average **:</b>.<i> The system load average is the sum of the number of runnable entities queued to the available processors and the number of runnable entities running on the available processors averaged over a period of time. The
+	  way in which the load average is calculated is operating system specific but is typically a damped time-dependent average. </i></li> 
+				</ul>
+			</h6>
+		</Left>
+		
+		<table class="table table-bordered table-condensed">
+		<tbody>
+		
+			<tr>
+				  <td><div id="memoryChartContainer" style="height: 300px; width: 100%;"></div></td>				 
+			</tr>
+		
+		</tbody>
+		</table>
+	</div>
+</div>
+</div>	
+<link href="css/menu.css" rel="stylesheet">
+<link href="css/font-awesome.min.css" rel="stylesheet">
+<link href="css/google-apis-font.css" rel="stylesheet">
+<link href="css/bootstrap-3.3.2/css/bootstrap.min.css" rel="stylesheet">	
+</body>
+
+
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body ng-app="myApp">
+
+	<div ng-controller="myController" ng-init="getClassloaderInfo();"
+		class="container">
+		
+		<div class="container-fluid">    
+  		<ul class="list-inline">
+		    <li><a href="index.html"><img class="bottom" src="img/serverdekho.png"></a></li>
+		    <li><blockquote>ClassLoader Analysis</blockquote></li>
+  		</ul>
+	</div> 
+	
+		<div class="panel panel-default">
+			<ul class="list-inline">
+				<ul>
+					<li ng-repeat="item in items">{{item.classloader}} <br>Total
+						Class Loaded: {{item.totalloaded}}
+
+						<button ng-if="item.expanded" ng-click="item.expanded = false">-</button>
+						<button ng-if="!item.expanded" ng-click="item.expanded = true">+</button>
+
+
+						<ul ng-if="item.expanded">
+							<li ng-repeat="loadedClassesDetail in item.loadedClassesDetails">
+								{{loadedClassesDetail.classname}}</li>
+						</ul>
+
+					</li>
+				</ul>
+			</ul>
+		</div>
+</div>
+
+
+
+		<link href="css/bootstrap-3.3.2/css/bootstrap.min.css"
+			rel="stylesheet">
+		<script
+			src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+		<script src="js/classloader.js"></script>
+</body>
+</html>

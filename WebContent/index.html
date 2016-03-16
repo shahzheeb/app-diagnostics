@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Home</title>
+<!DOCTYPE HTML>
+<script type="text/javascript">
+	window.onload = function() {
+		var dataPoints1 = [];
+
+		var chart = new CanvasJS.Chart("chartContainer", {
+			backgroundColor : "#F5DEB3",
+			title : {
+				text : "Storage"
+			},
+			animationEnabled : true,
+			legend : {
+				verticalAlign : "center",
+				horizontalAlign : "left",
+				fontSize : 20,
+				fontFamily : "Helvetica"
+			},
+			theme : "theme2",
+			data : [ {
+				type : "pie",
+				indexLabelFontFamily : "times",
+				indexLabelFontSize : 15,
+				indexLabel : "{label} GB",
+				startAngle : -20,
+				//showInLegend: true,
+				//toolTipContent:"{legendText}",
+				dataPoints : dataPoints1
+			} ]
+		});
+		//chart.render();
+
+		var updateChart = function(count) {
+			count = count || 1;
+			
+			// count is number of times loop runs to generate random dataPoints. 
+			var xhr = new XMLHttpRequest();
+			//xhr.open("GET", "http://localhost:8080/appdiagnostics-web/GetThreadDetailsServlet", false);
+			xhr.open("GET", "GetHomeInfoServlet", false);
+			xhr.send();
+			console.log('responseText:' + xhr.responseText);
+			var data = JSON.parse(xhr.responseText);
+			for (var i = 0; i < count; i++) {
+
+				// pushing the new values
+				dataPoints1.push({
+					y : data.totSpace,
+					//legendText : "Total Space",
+					label : "Total Space " + data.totSpace
+				});
+
+				dataPoints1.push({
+					y : data.availSpace,
+					//legendText : "Usable Space",
+					label : "Usable Space " + data.availSpace
+				});
+				
+				document.getElementById("os").innerHTML = data.os;
+				document.getElementById("os_ver").innerHTML = data.osVer;
+				document.getElementById("no_processors").innerHTML = data.no_processor;
+				document.getElementById("java_ver").innerHTML = data.java_ver;
+				document.getElementById("vm_name").innerHTML = data.vm_name;
+			};
+
+			chart.render();
+		};
+
+		// generates first set of dataPoints 
+		updateChart(1);
+	}
+</script>
+<script type="text/javascript" src="js/canvasjs.min.js"></script>
+<style type="text/css">
+body {
+	background: black !important;
+}
+	/* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+.table-bordered td {
+	border: 0px solid #7C2513 !important;
+	background-color: black !important;
+	color: white !important;
+}
+</style>
+</head>
+<body>
+	<header>
+		<nav>
+			<input type="checkbox" id="css-toggle-menu" name="css-toggle-menu">
+			<ul class="main">
+				<!-- <li><a href="index.html"><img class="bottom" src="img/serverdekho.png"></a></li>  -->
+				<li><a href="index.html">Home</a></li>
+				<li><a href="memory.html">Memory</a></li>
+				<li><a href="threads.html">Threads/Classes</a></li>
+				<li><a href="cpumem.html">System</a></li>
+				<li><a href="GetLoggerServlet">Log Level</a></li>
+			</ul>
+			<label for="css-toggle-menu" id="css-toggle-menu"></label>
+		</nav>
+	</header>
+
+	<br>
+	<div class="container">
+		<div class="panel panel-default">
+			<div class="table-responsive">
+
+				<table class="table table-bordered table-condensed">
+					<tbody>
+						<tr style="width: 50%;">
+							<td style="width: 20%;">Operating System: </td>
+							<td id="os">dsdfsdfsdfsd</td>
+						</tr>
+						<tr>
+							<td style="width: 20%;">OS Version: </td>
+							<td id="os_ver">sdsd</td>
+						</tr>
+						<tr>
+							<td style="width: 20%;">No of Processors: </td>
+							<td id="no_processors">dsds</td>
+						</tr>
+						<tr>
+							<td style="width: 20%;">Java Version: </td>
+							<td id="java_ver">dsds</td>
+						</tr>
+						<tr>
+							<td style="width: 20%;">VM Name: </td>
+							<td id="vm_name">sdsd</td>
+						</tr>
+					</tbody>
+				</table>
+
+				
+				<table class="table table-bordered table-condensed">
+					<tbody style="width: 50%;">
+
+						<tr style="width: 50%;">
+							<td style="width: 40%;"><div id="chartContainer"
+									style="height: 300px; width: 100%;"></div></td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<link href="css/menu.css" rel="stylesheet">
+	<link href="css/font-awesome.min.css" rel="stylesheet">
+	<link href="css/google-apis-font.css" rel="stylesheet">
+	<link href="css/bootstrap-3.3.2/css/bootstrap.min.css" rel="stylesheet">
+</body>
+
+</html>

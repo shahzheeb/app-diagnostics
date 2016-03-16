@@ -1,0 +1,275 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<script type="text/javascript">
+	window.onload = function() {
+
+		// dataPoints
+		var dataPoints1 = [];
+		var dataPoints2 = [];
+		
+		var dataPoints3 = [];
+		var dataPoints4 = [];
+
+		var chart = new CanvasJS.Chart("chartContainer", {
+			zoomEnabled : true,
+			title : {
+				text : "Threads"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Thread count every 3 secs"
+			},
+			axisY : {
+				suffix : ' ',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Peak Threads",
+				dataPoints : dataPoints1
+			}, {
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Live Threads",
+				dataPoints : dataPoints2
+			} ,
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Daemon Threads",
+				dataPoints : []
+			},
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Total Started Threads",
+				dataPoints : []
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+		
+		var chart2 = new CanvasJS.Chart("classlaoderChartContainer", {
+			zoomEnabled : true,
+			title : {
+				text : "Classes Loaded/Unloaded"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "count every 3 secs"
+			},
+			axisY : {
+				suffix : ' ',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Class Loaded",
+				dataPoints : dataPoints3
+			}, {
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Class Unloaded",
+				dataPoints : dataPoints4
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+		
+
+		var updateInterval = 3000;
+		// initial value
+		var yValue1 = 0;
+		var yValue2 = 0;
+		var yValue3 = 0;
+		var yValue4 = 0;
+		
+		var yValueClassesLoaded = 0;
+		var yValueClassesUnloaded = 0;
+
+		var time = new Date;
+		
+		var updateChart = function(count) {
+			count = count || 1;
+
+			// count is number of times loop runs to generate random dataPoints. 
+			var xhr = new XMLHttpRequest();
+			//xhr.open("GET", "http://localhost:8080/appdiagnostics-web/GetThreadDetailsServlet", false);
+			xhr.open("GET", "GetThreadDetailsServlet", false);
+			xhr.send();
+			console.log('responseText:' + xhr.responseText);
+			var dataaa = JSON.parse(xhr.responseText);
+
+			for (var i = 0; i < count; i++) {
+
+				// add interval duration to time				
+				time.setTime(time.getTime() + updateInterval);
+
+				yValue1 = dataaa.peakThreadcount;
+				yValue2 = dataaa.liveThreadcount;
+				yValue3 = dataaa.deamonThreadcount;
+				yValue4 = dataaa.totalStartedthreads;
+				
+				yValueClassesLoaded = dataaa.loadedClassCount;
+				yValueClassesUnloaded = dataaa.unloadedClassCount;
+				
+				// pushing the new values
+				dataPoints1.push({
+					x : time.getTime(),
+					y : yValue1
+				});
+				dataPoints2.push({
+					x : time.getTime(),
+					y : yValue2
+				});
+				
+				dataPoints3.push({
+					x : time.getTime(),
+					y : yValueClassesLoaded
+				});
+				dataPoints4.push({
+					x : time.getTime(),
+					y : yValueClassesUnloaded
+				});
+
+			};
+
+			// updating legend text with  updated with y Value 
+			chart.options.data[0].legendText = " Peak thread count " + yValue1;
+			chart.options.data[1].legendText = " Live thread count " + yValue2;
+			chart.options.data[2].legendText = " Daemon thread count " + yValue3;
+			chart.options.data[3].legendText = " Total started count " + yValue4;
+        
+			chart2.options.data[0].legendText = " Loaded class count " + yValueClassesLoaded;
+			chart2.options.data[1].legendText = " Unloaded class count " + yValueClassesUnloaded;
+			
+			chart.render();
+			chart2.render();
+		};
+
+		// generates first set of dataPoints 
+		updateChart(1);
+
+		// update chart after specified interval 
+		setInterval(function() {
+			updateChart()
+		}, updateInterval);
+	}
+</script>
+<script type="text/javascript" src="js/canvasjs.min.js"></script>
+</head>
+<style type="text/css">
+   body { background: black !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+   .table-bordered td {
+     border: 0px solid #7C2513 !important;
+     background-color: black !important;
+ }
+
+</style>
+<body>
+<header>
+   <nav>
+         <input type="checkbox" id="css-toggle-menu" name="css-toggle-menu"> 
+         <ul class="main">
+				<!-- <li><a href="index.html"><img class="bottom" src="img/serverdekho.png"></a></li>  -->
+				<li><a href="index.html">Home</a></li>
+				<li><a href="memory.html">Memory</a></li>
+				<li><a href="threads.html">Threads/Classes</a></li>
+				<li><a href="cpumem.html">System</a></li>
+				<li><a href="GetLoggerServlet">Log Level</a></li>
+			</ul>
+         <label for="css-toggle-menu" id="css-toggle-menu"></label> 
+   </nav>
+</header>
+<br>
+<div class="container">
+<div class="panel panel-default">
+	<div class="table-responsive">
+		
+		<table class="table table-bordered table-condensed">
+		<tbody>
+		
+		<tr>
+				  <td><div id="chartContainer" style="height: 300px; width: 100%;"></div></td>
+				  <td><div id="classlaoderChartContainer" style="height: 300px; width: 100%;"></div></td>
+		</tr>
+		<!-- <tr>
+				  <td><div id="heapMainChartContainer" style="height: 300px; width: 100%;"></div></td>
+				  <td><div id="nonHeapMainChartContainer" style="height: 300px; width: 100%;"></div></td>
+		</tr> -->
+			</tbody>
+		</table>
+		
+		<CENTER>
+			<h5>
+									
+					Thread Dump? <a href="GetThreadDumpServlet" target="_blank">Click here</a>
+			</h5>
+		</CENTER>
+	</div>
+</div>
+</div>	
+<link href="css/menu.css" rel="stylesheet">
+<link href="css/font-awesome.min.css" rel="stylesheet">
+<link href="css/google-apis-font.css" rel="stylesheet">
+<link href="css/bootstrap-3.3.2/css/bootstrap.min.css" rel="stylesheet">	
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<script type="text/javascript">
+	window.onload = function() {
+
+		// dataPoints
+		var dataPoints1 = [];
+		var dataPoints2 = [];
+		var dataPoints3 = [];
+		var dataPoints4 = [];
+
+		var chart = new CanvasJS.Chart("heapMainChartContainer", {
+			animationEnabled: true,
+			zoomEnabled : true,
+			title : {
+				text : "Heap Memory"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Heap count every 3 secs"
+			},
+			axisY : {
+				suffix : ' mb',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "area",
+				color: "rgba(40,175,101,0.6)",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Committed",
+				dataPoints : dataPoints1
+			}, {
+				// dataSeries2
+				type : "area",
+				color: "rgba(0,75,141,0.7)",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Used",
+				dataPoints : dataPoints2
+			} ,
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Init",
+				dataPoints : []
+			},
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Max",
+				dataPoints : []
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+
+		// 2nd chart - start
+		var chart2 = new CanvasJS.Chart("nonHeapMainChartContainer", {
+			zoomEnabled : true,
+			title : {
+				text : "Non Heap Memory"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Heap count every 3 secs"
+			},
+			axisY : {
+				suffix : ' mb',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "area",
+				color: "rgba(40,175,101,0.6)",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Committed",
+				dataPoints : dataPoints3
+			}, {
+				// dataSeries2
+				type : "area",
+				color: "rgba(0,75,141,0.7)",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Used",
+				dataPoints : dataPoints4
+			} ,
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Init",
+				dataPoints : []
+			},
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Max",
+				dataPoints : []
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+		// 2nd chart - end
+
+		var updateInterval = 3000;
+		// initial value
+		var yValue1 = 0;
+		var yValue2 = 0;
+		var yValue3 = 0;
+		var yValue4 = 0;
+		
+		var yValueNonheap1 = 0;
+		var yValueNonheap2 = 0;
+		var yValueNonheap3 = 0;
+		var yValueNonheap4 = 0;
+
+		var time = new Date;
+		/* time.setHours(9);
+		time.setMinutes(30);
+		time.setSeconds(00);
+		time.setMilliseconds(00); */
+		// starting at 9.30 am
+		var updateChart = function(count) {
+			count = count || 1;
+
+			// count is number of times loop runs to generate random dataPoints. 
+			var xhr = new XMLHttpRequest();
+			//xhr.open("GET", "http://localhost:8080/appdiagnostics-web/GetThreadDetailsServlet", false);
+			xhr.open("GET", "GetFullMemoryDetailsServlet", false);
+			xhr.send();
+			console.log('responseText:' + xhr.responseText);
+			var data = JSON.parse(xhr.responseText);
+
+			for (var i = 0; i < count; i++) {
+
+				// add interval duration to time				
+				time.setTime(time.getTime() + updateInterval);
+
+				yValue1 = data.heapcommitted
+				yValue2 = data.heapused;
+				yValue3 = data.heapinit;
+				yValue4 = data.heapmax;
+				yValueNonheap1 = data.nonheapcommitted;
+				yValueNonheap2 = data.nonheapused;
+				yValueNonheap3 = data.nonheapinit;
+				yValueNonheap4 = data.nonheapmax;
+				
+				// pushing the new values
+				dataPoints1.push({
+					x : time.getTime(),
+					y : yValue1
+				});
+				dataPoints2.push({
+					x : time.getTime(),
+					y : yValue2
+				});
+				dataPoints3.push({
+					x : time.getTime(),
+					y : yValueNonheap1
+				});
+				dataPoints4.push({
+					x : time.getTime(),
+					y : yValueNonheap2
+				});
+
+			};
+
+			// updating legend text with  updated with y Value 
+			chart.options.data[0].legendText = " Committed " + yValue1;
+			chart.options.data[1].legendText = " Used " + yValue2;
+			chart.options.data[2].legendText = " Init " + yValue3;
+			chart.options.data[3].legendText = " Max " + yValue4;
+			
+			chart2.options.data[0].legendText = " Committed " + yValueNonheap1;
+			chart2.options.data[1].legendText = " Used " + yValueNonheap2;
+			chart2.options.data[2].legendText = " Init " + yValueNonheap3;
+			chart2.options.data[3].legendText = " Max " + yValueNonheap4;
+        
+			chart.render();
+			chart2.render();
+		};
+
+		// generates first set of dataPoints 
+		updateChart(1);
+
+		// update chart after specified interval 
+		setInterval(function() {
+			updateChart()
+		}, updateInterval);
+	}
+	
+</script>
+<script type="text/javascript" src="js/canvasjs.min.js"></script>
+</head>
+<style type="text/css">
+   body { background: black !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+   .table-bordered td {
+     border: 0px solid #7C2513 !important;
+     background-color: black !important;
+ }
+
+</style>
+<body>
+
+<header>
+   <nav>
+         <input type="checkbox" id="css-toggle-menu" name="css-toggle-menu"> 
+        <ul class="main">
+				<!-- <li><a href="index.html"><img class="bottom" src="img/serverdekho.png"></a></li>  -->
+				<li><a href="index.html">Home</a></li>
+				<li><a href="memory.html">Memory</a></li>
+				<li><a href="threads.html">Threads/Classes</a></li>
+				<li><a href="cpumem.html">System</a></li>
+				<li><a href="GetLoggerServlet">Log Level</a></li>
+			</ul>
+         <label for="css-toggle-menu" id="css-toggle-menu"></label> 
+   </nav>
+</header>
+
+<br>
+<div class="container">
+<div class="panel panel-default">
+	<div class="table-responsive">
+		
+		<table class="table table-bordered table-condensed">
+		<tbody>
+		
+		<tr>
+				  <td><div id="heapMainChartContainer" style="height: 300px; width: 100%;"></div></td>
+				  <td><div id="nonHeapMainChartContainer" style="height: 300px; width: 100%;"></div></td>
+		</tr>
+		<!-- <tr>
+				  <td><div id="heapMainChartContainer" style="height: 300px; width: 100%;"></div></td>
+				  <td><div id="nonHeapMainChartContainer" style="height: 300px; width: 100%;"></div></td>
+		</tr> -->
+			</tbody>
+		</table>
+		
+		<CENTER>
+			<h5>
+				More detailed memory analysis? <a href="memorydetail.html" target="_blank">Click here</a>
+					
+					Heap Dump? <a href="GetHeapDumpServlet" target="popup" 
+					onclick="window.open('GetHeapDumpServlet','Memory Details','width=400,height=300,location=no,scrollbars=no')">Click here</a>
+			</h5>
+		</CENTER>
+	</div>
+</div>
+</div>	
+<link href="css/menu.css" rel="stylesheet">
+<link href="css/font-awesome.min.css" rel="stylesheet">
+<link href="css/google-apis-font.css" rel="stylesheet">
+<link href="css/bootstrap-3.3.2/css/bootstrap.min.css" rel="stylesheet">	
+</body>
+
+
+</html>

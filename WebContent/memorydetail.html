@@ -1,0 +1,666 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<script type="text/javascript">
+	window.onload = function() {
+
+		// dataPoints
+		var dataPoints1 = [];
+		var dataPoints2 = [];
+		var dataPoints3 = [];
+		var dataPoints4 = [];
+		var dataPoints5 = [];
+		var dataPoints6 = [];
+		
+		var dataPoints7 = [];
+		var dataPoints8 = [];
+		var dataPoints9 = [];
+		var dataPoints10 = [];
+		var dataPoints11 = [];
+		var dataPoints12 = [];
+
+		var chart = new CanvasJS.Chart("edenChartContainer", {
+			zoomEnabled : true,
+			title : {
+				text : "PS Eden (Heap)"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Heap count every 3 secs"
+			},
+			axisY : {
+				suffix : ' mb',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Committed",
+				dataPoints : dataPoints1
+			}, {
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Used",
+				dataPoints : dataPoints2
+			} ,
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Init",
+				dataPoints : []
+			},
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Max",
+				dataPoints : []
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+
+		// 2nd chart - start
+			var chart2 = new CanvasJS.Chart("survivorSpaceChartContainer", {
+			zoomEnabled : true,
+			title : {
+				text : "PS SurvivorSpace (Heap)"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Heap count every 3 secs"
+			},
+			axisY : {
+				suffix : ' mb',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Committed",
+				dataPoints : dataPoints3
+			}, {
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Used",
+				dataPoints : dataPoints4
+			} ,
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Init",
+				dataPoints : []
+			},
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Max",
+				dataPoints : []
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+		// 2nd chart - end
+		
+		// 3rd chart - start
+			var chart3 = new CanvasJS.Chart("oldGenChartContainer", {
+			zoomEnabled : true,
+			title : {
+				text : "PS Old Gen (Heap)"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Heap count every 3 secs"
+			},
+			axisY : {
+				suffix : ' mb',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Committed",
+				dataPoints : dataPoints5
+			}, {
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Used",
+				dataPoints : dataPoints6
+			} ,
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Init",
+				dataPoints : []
+			},
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Max",
+				dataPoints : []
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		}); 
+		// 3rd chart - end
+		
+		
+		// NON HEAP STARTS
+		var chart4 = new CanvasJS.Chart("compressedClassChartContainer", {
+			zoomEnabled : true,
+			title : {
+				text : "Compressed Class (Non-Heap)"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Heap count every 3 secs"
+			},
+			axisY : {
+				suffix : ' mb',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Committed",
+				dataPoints : dataPoints7
+			}, {
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Used",
+				dataPoints : dataPoints8
+			} ,
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Init",
+				dataPoints : []
+			},
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Max",
+				dataPoints : []
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+
+		// 2nd chart - start
+			var chart5 = new CanvasJS.Chart("metaspaceChartContainer", {
+			zoomEnabled : true,
+			title : {
+				text : "Metaspace (Non-Heap)"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Heap count every 3 secs"
+			},
+			axisY : {
+				suffix : ' mb',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Committed",
+				dataPoints : dataPoints9
+			}, {
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Used",
+				dataPoints : dataPoints10
+			} ,
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Init",
+				dataPoints : []
+			},
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Max",
+				dataPoints : []
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		});
+		// 2nd chart - end
+		
+		// 3rd chart - start
+			var chart6 = new CanvasJS.Chart("codeCacheChartContainer", {
+			zoomEnabled : true,
+			title : {
+				text : "Code Cache (Non-Heap)"
+			},
+			toolTip : {
+				shared : true
+
+			},
+			legend : {
+				verticalAlign : "top",
+				horizontalAlign : "center",
+				fontSize : 14,
+				fontWeight : "bold",
+				fontFamily : "calibri",
+				fontColor : "dimGrey"
+			},
+			axisX : {
+				title : "Heap count every 3 secs"
+			},
+			axisY : {
+				suffix : ' mb',
+				includeZero : false
+			},
+			data : [ {
+				// dataSeries1
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Committed",
+				dataPoints : dataPoints11
+			}, {
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Used",
+				dataPoints : dataPoints12
+			} ,
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Init",
+				dataPoints : []
+			},
+			{
+				// dataSeries2
+				type : "line",
+				xValueType : "dateTime",
+				showInLegend : true,
+				name : "Heap Max",
+				dataPoints : []
+			}],
+			legend : {
+				cursor : "pointer",
+				itemclick : function(e) {
+					if (typeof (e.dataSeries.visible) === "undefined"
+							|| e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					} else {
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+			}
+		}); 
+		// 3rd chart - end
+		//NON HEAP ENDS
+		var updateInterval = 3000;
+		// initial value
+		var yValueEden1 = 0;
+		var yValueEden2 = 0;
+		var yValueEden3 = 0;
+		var yValueEden4 = 0;
+		
+		var yValueSurvivor1 = 0;
+		var yValueSurvivor2 = 0;
+		var yValueSurvivor3 = 0;
+		var yValueSurvivor4 = 0;
+		
+		var yValueOldGen1 = 0;
+		var yValueOldGen2 = 0;
+		var yValueOldGen3 = 0;
+		var yValueOldGen4 = 0;
+		
+		var yValueCompressed1 = 0;
+		var yValueCompressed2 = 0;
+		var yValueCompressed3 = 0;
+		var yValueCompressed4 = 0;
+		
+		var yValueMetaspace1 = 0;
+		var yValueMetaspace2 = 0;
+		var yValueMetaspace3 = 0;
+		var yValueMetaspace4 = 0;
+		
+		var yValueCodeCache1 = 0;
+		var yValueCodeCache2 = 0;
+		var yValueCodeCache3 = 0;
+		var yValueCodeCache4 = 0;
+		
+
+		var time = new Date;
+		/* time.setHours(9);
+		time.setMinutes(30);
+		time.setSeconds(00);
+		time.setMilliseconds(00); */
+		// starting at 9.30 am
+		var updateChart = function(count) {
+			count = count || 1;
+
+			// count is number of times loop runs to generate random dataPoints. 
+			var xhr = new XMLHttpRequest();
+			//xhr.open("GET", "http://localhost:8080/appdiagnostics-web/GetThreadDetailsServlet", false);
+			xhr.open("GET", "GetFullMemoryDetailsServlet", false);
+			xhr.send();
+			console.log('responseText:' + xhr.responseText);
+			var data = JSON.parse(xhr.responseText);
+			//alert(dataaa.liveThreadcount);
+			//alert(dataaa.deamonThreadcount);
+			//alert(dataaa.totalthreads);
+			//alert(dataaa.peakThreadcount);
+			
+			//console.log(xhr.status);
+			//console.log(xhr.statusText);
+			//alert(dataaa);
+
+			for (var i = 0; i < count; i++) {
+
+				// add interval duration to time				
+				time.setTime(time.getTime() + updateInterval);
+
+				yValueEden1 = data.psedencommitted;
+				yValueEden2 = data.psedenused;
+				yValueEden3 = data.psedeninit;
+				yValueEden4 = data.psedenmax;
+				
+				yValueSurvivor1 = data.pssurvivorspcommitted;
+				yValueSurvivor2 = data.pssurvivorspused;
+				yValueSurvivor3 = data.pssurvivorspinit;
+				yValueSurvivor4 = data.pssurvivorspmax;
+				
+				yValueOldGen1 = data.psoldgencommitted;
+				yValueOldGen2 = data.psoldgenused;
+				yValueOldGen3 = data.psoldgeninit;
+				yValueOldGen4 = data.psoldgenmax;
+				
+				yValueCompressed1 = data.compressedclasscommitted;
+				yValueCompressed2 = data.compressedclassused;
+				yValueCompressed3 = data.compressedclassinit;
+				yValueCompressed4 = data.compressedclassmax;
+				
+				yValueMetaspace1 = data.metaspacecommitted;
+				yValueMetaspace2 = data.metaspaceused;
+				yValueMetaspace3 = data.metaspaceinit;
+				yValueMetaspace4 = data.metaspacemax;
+				
+				yValueCodeCache1 = data.codecachecommitted;
+				yValueCodeCache2 = data.codecacheused;
+				yValueCodeCache3 = data.codecacheinit;
+				yValueCodeCache4 = data.codecachemax;
+				
+				// pushing the new values
+				dataPoints1.push({
+					x : time.getTime(),
+					y : yValueEden1
+				});
+				dataPoints2.push({
+					x : time.getTime(),
+					y : yValueEden2
+				});
+				
+				dataPoints3.push({
+					x : time.getTime(),
+					y : yValueSurvivor1
+				});
+				dataPoints4.push({
+					x : time.getTime(),
+					y : yValueSurvivor2
+				});
+				dataPoints5.push({
+					x : time.getTime(),
+					y : yValueOldGen1
+				});
+				dataPoints6.push({
+					x : time.getTime(),
+					y : yValueOldGen2
+				});
+				
+				dataPoints7.push({
+					x : time.getTime(),
+					y : yValueCompressed1
+				});
+				dataPoints8.push({
+					x : time.getTime(),
+					y : yValueCompressed2
+				});
+				
+				dataPoints9.push({
+					x : time.getTime(),
+					y : yValueMetaspace1
+				});
+				dataPoints10.push({
+					x : time.getTime(),
+					y : yValueMetaspace2
+				});
+				dataPoints11.push({
+					x : time.getTime(),
+					y : yValueCodeCache1
+				});
+				dataPoints12.push({
+					x : time.getTime(),
+					y : yValueCodeCache2
+				});
+
+			};
+
+			// updating legend text with  updated with y Value 
+			chart.options.data[0].legendText = " Committed " + yValueEden1;
+			chart.options.data[1].legendText = " Used " + yValueEden2;
+			chart.options.data[2].legendText = " Init " + yValueEden3;
+			chart.options.data[3].legendText = " Max " + yValueEden4;
+			
+			chart2.options.data[0].legendText = " Committed " + yValueSurvivor1;
+			chart2.options.data[1].legendText = " Used " + yValueSurvivor2;
+			chart2.options.data[2].legendText = " Init " + yValueSurvivor3;
+			chart2.options.data[3].legendText = " Max " + yValueSurvivor4;
+        
+			chart.render();
+			chart2.render();
+			chart3.render();
+			chart4.render();
+			chart5.render();
+			chart6.render();
+		};
+
+		// generates first set of dataPoints 
+		updateChart(1);
+
+		// update chart after specified interval 
+		setInterval(function() {
+			updateChart()
+		}, updateInterval);
+	}
+	
+</script>
+<script type="text/javascript" src="js/canvasjs.min.js"></script>
+</head>
+<style type="text/css">
+   body { background: black !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+   .table-bordered td {
+     border: 0px solid #7C2513 !important;
+     background-color: black !important;
+ }
+
+</style>
+<body>
+<div class="container">
+<div class="panel panel-default">
+	<div class="table-responsive">
+		
+		<table class="table table-bordered table-condensed">
+		<tbody>
+		
+			<tr>
+					  <td><div id="edenChartContainer" style="height: 300px; width: 100%;"></div></td>
+					  <td><div id="survivorSpaceChartContainer" style="height: 300px; width: 100%;"></div></td>				 
+			</tr>
+			
+			<tr>
+					  <td><div id="oldGenChartContainer" style="height: 300px; width: 100%;"></div></td>
+					  <td><div id="compressedClassChartContainer" style="height: 300px; width: 100%;"></div></td>				 
+			</tr>
+			<tr>
+					  <td><div id="metaspaceChartContainer" style="height: 300px; width: 100%;"></div></td>
+					  <td><div id="codeCacheChartContainer" style="height: 300px; width: 100%;"></div></td>				 
+			</tr>
+		</tbody>
+		</table>
+		
+		
+	</div>
+</div>
+</div>	
+<link href="css/bootstrap-3.3.2/css/bootstrap.min.css" rel="stylesheet">	
+</body>
+
+
+</html>
